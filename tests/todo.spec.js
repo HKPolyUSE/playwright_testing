@@ -61,6 +61,21 @@ test.describe.serial('Todo List App - End to end', () => {
   }
 
   /**
+   * Helper to add multiple todos in the UI.
+   * This makes tests self-contained by creating required items locally.
+   */
+  async function addTodos(page, items) {
+    const addInput = page.getByPlaceholder('Add a new todo...');
+    const addBtn = page.getByRole('button', { name: 'Add' });
+    for (const text of items) {
+      await addInput.fill(text);
+      await addBtn.click();
+      // small pause to allow UI to update
+      await page.waitForTimeout(200);
+    }
+  }
+
+  /**
    * TC-002: Verify Invalid Login Error Handling
    * 
    * Steps:
@@ -170,6 +185,12 @@ test.describe.serial('Todo List App - End to end', () => {
    */
   test('TC-005 and TC-006 - toggle todos completed and unchecked', async ({ page }) => {
     await ensureLoggedIn(page);
+    // Create the todos needed for this test so it doesn't rely on other tests
+    await addTodos(page, [
+      'Buy groceries',
+      'Complete project report',
+      'Call dentist for appointment'
+    ]);
     const checkboxes = page.getByRole('checkbox');
     // mark first and last as complete
     await checkboxes.first().check();
@@ -200,6 +221,12 @@ test.describe.serial('Todo List App - End to end', () => {
    */
   test('TC-007 - delete todo with confirmation', async ({ page }) => {
     await ensureLoggedIn(page);
+    // create todos for this test and then delete the middle one
+    await addTodos(page, [
+      'Buy groceries',
+      'Complete project report',
+      'Call dentist for appointment'
+    ]);
     // delete the middle todo (Complete project report)
     const deleteBtns = page.getByRole('button', { name: 'Delete' });
 
@@ -231,6 +258,12 @@ test.describe.serial('Todo List App - End to end', () => {
    */
   test('TC-008 - cancel delete preserves todo', async ({ page }) => {
     await ensureLoggedIn(page);
+    // prepare todos for this test
+    await addTodos(page, [
+      'Buy groceries',
+      'Complete project report',
+      'Call dentist for appointment'
+    ]);
     const deleteBtns = page.getByRole('button', { name: 'Delete' });
 
     // dismiss dialog
@@ -263,6 +296,11 @@ test.describe.serial('Todo List App - End to end', () => {
    */
   test('TC-010 - data persistence after logout/login', async ({ page }) => {
     await ensureLoggedIn(page);
+    // create todos that should persist across logout/login
+    await addTodos(page, [
+      'Buy groceries',
+      'Call dentist for appointment'
+    ]);
     // logout
     await page.getByRole('link', { name: 'Logout' }).click();
     await expect(page).toHaveURL(/login/);

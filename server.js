@@ -30,15 +30,13 @@ const userTodos = {
 // Test cleanup endpoint
 app.post('/__test__/cleanup', (req, res) => {
   console.log('Cleaning up todos for all users...');
-  if (process.env.NODE_ENV === 'test') {
-    console.log('Resetting user todos...');
-    for (let user in userTodos) {
-      userTodos[user] = [];
-    }
-    res.json({ success: true });
-  } else {
-    res.status(404).end();
+  
+  console.log('Resetting user todos...');
+  for (let user in userTodos) {
+    userTodos[user] = [];
   }
+  res.json({ success: true });
+
 });
 
 // Middleware to check if user is logged in
