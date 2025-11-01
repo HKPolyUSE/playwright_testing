@@ -27,6 +27,20 @@ const userTodos = {
   'alice': []
 };
 
+// Test cleanup endpoint
+app.post('/__test__/cleanup', (req, res) => {
+  console.log('Cleaning up todos for all users...');
+  if (process.env.NODE_ENV === 'test') {
+    console.log('Resetting user todos...');
+    for (let user in userTodos) {
+      userTodos[user] = [];
+    }
+    res.json({ success: true });
+  } else {
+    res.status(404).end();
+  }
+});
+
 // Middleware to check if user is logged in
 function isAuthenticated(req, res, next) {
   if (req.session.user) {
