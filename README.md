@@ -48,3 +48,4 @@ Write playwright test cases based on this testing session.
 # Reference
 
 https://code.visualstudio.com/docs/copilot/customization/mcp-servers
+
